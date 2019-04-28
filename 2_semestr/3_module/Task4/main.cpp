@@ -42,7 +42,7 @@ void UpdateNetwork(ListGraph &graph, const std::vector<Edge> &path, int value);
 //Count flow though graph
 int CountFlow(const ListGraph &graph, const ListGraph &residual_network, int source);
 //Find max day
-int BinarySearch(ListGraph& orig_graph, int left, int right, int employee_count);
+int BinarySearch(const ListGraph& orig_graph, int left, int right, int employee_count);
 
 
 int main() {
@@ -80,8 +80,9 @@ int main() {
 }
 
 //Binary search on answer
-int BinarySearch(ListGraph& graph, int left, int right, int employee_count){
+int BinarySearch(const ListGraph& orig_graph, int left, int right, int employee_count){
   //Finding the last day all employees are drunk... with tea!
+  ListGraph graph(orig_graph);
   while (left < right - 1) {
     int middle = (left + right) / 2;
     for (int i = 0; i < employee_count; ++i) {
