@@ -39,5 +39,5 @@ class ListGraph {
   const std::vector<Edge> &GetNextEdges(int vertex) const;
   const ListGraph FindMST() const;
   double GraphWeight() const;
-
+  double GetWeight(int from, int to) const;
 };

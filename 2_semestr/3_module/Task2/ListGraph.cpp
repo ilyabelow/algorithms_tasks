@@ -71,6 +71,14 @@ double ListGraph::GraphWeight() const {
 const std::vector<Edge> &ListGraph::GetNextEdges(int vertex) const {
   return adjacency_list[vertex];
 }
-Edge::Edge(int to, double weight) : to(to), weight(weight){
+double ListGraph::GetWeight(int from, int to) const {
+  for (auto &edge : GetNextEdges(from)) {
+    if (edge.to == to) {
+      return edge.weight;
+    }
+  }
+  return -1;
+}
+Edge::Edge(int to, double weight) : to(to), weight(weight) {
 
 }

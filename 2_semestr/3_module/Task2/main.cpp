@@ -19,39 +19,39 @@ double Point::operator-(const Point &other) const {
 }
 Point::Point(double x, double y) : x(x), y(y) {}
 
-//int main() {
-//  std::random_device rand_dev{};
-//  std::mt19937 generator{rand_dev()};
-//  std::normal_distribution<> distribution{0, 1};
-//  std::vector<Point> points;
-//  for (int i = 0; i < 5; ++i) {
-//    points.emplace_back(distribution(generator), distribution(generator));
-//  }
-//  ListGraph graph;
-//  for (int i = 0; i < 5; ++i) {
-//    for (int j = 0; j < 5; ++j) {
-//      if (i == j) {
-//        continue;
-//      }
-//      graph.EmplaceFullEdge(i, j, points[i] - points[j]);
-//    }
-//  }
-//  auto approx2 = Salesman2(graph);
-//
-//  return 0;
-//}
-
 int main() {
-  int vertices, edges;
-  std::cin >> vertices >> edges;
-  //Reading the graph
-  ListGraph graph(vertices);
-  for (int i = 0; i < edges; ++i) {
-    int from, to, weight;
-    std::cin >> from >> to >> weight;
-    graph.EmplaceEdge(from - 1, to - 1, static_cast<double >(weight));
+  std::random_device rand_dev{};
+  std::mt19937 generator{rand_dev()};
+  std::normal_distribution<> distribution{0, 1};
+  std::vector<Point> points;
+  for (int i = 0; i < 5; ++i) {
+    points.emplace_back(distribution(generator), distribution(generator));
   }
-  //Finding MST
-  std::cout << graph.FindMST().GraphWeight();
+  ListGraph graph(5);
+  for (int i = 0; i < 5; ++i) {
+    for (int j = 0; j < 5; ++j) {
+      if (i == j) {
+        continue;
+      }
+      graph.EmplaceEdge(i, j, points[i] - points[j]);
+    }
+  }
+  auto approx2 = Salesman2(graph);
+
   return 0;
 }
+
+//int main() {
+//  int vertices, edges;
+//  std::cin >> vertices >> edges;
+//  //Reading the graph
+//  ListGraph graph(vertices);
+//  for (int i = 0; i < edges; ++i) {
+//    int from, to, weight;
+//    std::cin >> from >> to >> weight;
+//    graph.EmplaceEdge(from - 1, to - 1, static_cast<double >(weight));
+//  }
+//  //Finding MST
+//  std::cout << graph.FindMST().GraphWeight();
+//  return 0;
+//}
