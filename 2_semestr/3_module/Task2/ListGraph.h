@@ -4,12 +4,20 @@
 #include <vector>
 
 #pragma once
+struct Edge {
+  int to;
+  double weight;
+  Edge(int to, double weight);
+
+};
+
 //Convenient struct for storing edges that hold full pair from -> to
 struct FullEdge {
   int from;
   int to;
   double weight;
   FullEdge(int from, int to, double weight);
+  FullEdge(int from, const Edge &edge);
 };
 
 //Functor for sorting edges
@@ -20,18 +28,15 @@ struct FullEdgeLess {
 //Graph that stores list of edges
 class ListGraph {
  private:
-  //List of edges
-  std::vector<FullEdge> edge_list;
-  //For fast vertices amount checks
-  int vetices_count = 0;
+  std::vector<std::vector<Edge>> adjacency_list;
  public:
-  ListGraph() = default;
+  explicit ListGraph(int vertices);
   int VerticesCount() const;
-  void EmplaceFullEdge(int from, int to, double weight);
+  void EmplaceEdge(int from, int to, double weight);
   void AddFullEdge(const FullEdge &edge);
 
-  const std::vector<FullEdge> &GetFullEdges() const;
-  const std::vector<FullEdge> &GetNextEdges() const;
+  const std::vector<FullEdge> GetFullEdges() const;
+  const std::vector<Edge> &GetNextEdges(int vertex) const;
   const ListGraph FindMST() const;
   double GraphWeight() const;
 

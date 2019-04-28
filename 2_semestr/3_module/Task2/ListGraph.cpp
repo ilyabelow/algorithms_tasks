@@ -10,35 +10,40 @@
 
 FullEdge::FullEdge(int from, int to, double weight) : from(from), to(to), weight(weight) {}
 
+FullEdge::FullEdge(int from, const Edge &edge) : from(from), to(edge.to), weight(edge.weight) {}
+
+ListGraph::ListGraph(int vertices) : adjacency_list(vertices) {}
+
 //Functor for sorting edges
 bool FullEdgeLess::operator()(const FullEdge &first, const FullEdge &second) const {
   return std::tie(first.weight, first.from, first.to) < std::tie(second.weight, second.from, second.to);
 }
 
-const std::vector<FullEdge> &ListGraph::GetFullEdges() const {
+const std::vector<FullEdge> ListGraph::GetFullEdges() const {
+  std::vector<FullEdge> edge_list;
+  for (int i = 0; i < VerticesCount(); ++i) {
+    for (auto edge : GetNextEdges(i)) {
+      edge_list.emplace_back(i, edge);
+    }
+  }
   return edge_list;
 }
 
-//Creating new edge
-void ListGraph::EmplaceFullEdge(int from, int to, double weight) {
-  //here we assume that V is {0, 1, ..., n-1} so amount of vertices is max vertex + 1
-  vetices_count = std::max(vetices_count, std::max(from, to) + 1);
-  edge_list.emplace_back(from, to, weight);
+void ListGraph::EmplaceEdge(int from, int to, double weight) {
+  adjacency_list[from].emplace_back(to, weight);
+}
+void ListGraph::AddFullEdge(const FullEdge &edge) {
+  EmplaceEdge(edge.from, edge.to, edge.weight);
 }
 
 int ListGraph::VerticesCount() const {
-  return vetices_count;
-}
-
-//Pushing back existing edge
-void ListGraph::AddFullEdge(const FullEdge &edge) {
-  edge_list.push_back(edge);
+  return adjacency_list.size();
 }
 
 //Standard Kruskal's algorithm
 const ListGraph ListGraph::FindMST() const {
   DSU dsu(VerticesCount());
-  ListGraph mst; //returning value
+  ListGraph mst(VerticesCount()); //returning value
 
   std::vector<FullEdge> edges = GetFullEdges();
   std::sort(edges.begin(), edges.end(), FullEdgeLess());
@@ -61,4 +66,11 @@ double ListGraph::GraphWeight() const {
     weight += edge.weight;
   }
   return weight;
+}
+
+const std::vector<Edge> &ListGraph::GetNextEdges(int vertex) const {
+  return adjacency_list[vertex];
+}
+Edge::Edge(int to, double weight) : to(to), weight(weight){
+
 }
