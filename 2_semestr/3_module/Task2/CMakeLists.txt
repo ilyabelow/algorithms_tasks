@@ -3,5 +3,4 @@ project(Task2)
 
 set(CMAKE_CXX_STANDARD 14)
 
-# add_executable(Task2 main.cpp find.cpp ListGraph.cpp ListGraph.h)
-add_executable(Task2 find.cpp)
+add_executable(Task2 main.cpp ArcGraph.cpp ArcGraph.h DSU.cpp DSU.h)
