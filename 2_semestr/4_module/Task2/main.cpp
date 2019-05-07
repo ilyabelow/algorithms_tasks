@@ -7,20 +7,18 @@ struct Node {
   int prefix;
   int suffix;
   int sequence;
-  Node *left;
-  Node *right;
-  Node(Node *left, Node *right);
-  explicit Node(Node *left);
+  Node(const Node &left, const Node &right);
   explicit Node(bool state);
+  explicit Node();
 };
 
 //Segment tree which calculates max length of sequence made of 1
 class SegmentTree {
  private:
-  //Tree root
-  Node *root;
+  //Tree vector
+  std::vector<Node> tree;
   //Recursive function for calculating answer in a range
-  int getSequence(const Node *node, int left, int right) const;
+  int getSequence(int index, int left, int right) const;
  public:
   //Tree preprocessing here
   explicit SegmentTree(const std::vector<int> &array);
@@ -30,108 +28,100 @@ class SegmentTree {
 
 int main() {
   //Reading initial array
-  int n, m;
-  std::cin >> n >> m;
-  std::vector<int> initial(n);
-  for (int i = 0; i < n; ++i) {
+  int array_size, request_count;
+  std::cin >> array_size >> request_count;
+  std::vector<int> initial(array_size);
+  for (int i = 0; i < array_size; ++i) {
     std::cin >> initial[i];
   }
   SegmentTree tree(initial);
-  //Recording answer
-  std::vector<int> answer;
-  for (int i = 0; i < m; ++i) {
-    int left, right;
+  //Handling requests
+  int left, right;
+  for (int i = 0; i < request_count; ++i) {
     std::cin >> left >> right;
-    answer.push_back(tree.Request(left, right));
-  }
-  //Writing answer
-  for (int i = 0; i < m; ++i) {
-    std::cout << answer[i] << std::endl;
+    std::cout << tree.Request(left, right) << std::endl;
   }
   return 0;
 }
 
 //Here tree is build layer by layer starting with leafs and ascending to root
 SegmentTree::SegmentTree(const std::vector<int> &array) {
-  std::vector<Node *> bottom;
-  std::vector<Node *> top;
-  //Bottom layer
-  for (auto i : array) {
-    bottom.push_back(new Node(i));
+  // Size of the bottom level is 2^(log_2_(array.size())
+  int size = 1;
+  while (size < array.size()) {
+    size *= 2;
   }
-  //While tree is not width of 1
-  while (bottom.size() > 1) {
-    for (int i = 0; i < bottom.size() / 2; ++i) {
-      top.push_back(new Node(bottom[2 * i], bottom[2 * i + 1]));
-    }
-    //Dealing with excess node
-    if (bottom.size() % 2 == 1) {
-      top.push_back(new Node(bottom[bottom.size() - 1]));
-    }
-    bottom = std::move(top);
-    top = std::vector<Node *>();
+  tree = std::vector<Node>(size * 2 - 1);
+  //Filling bottom layer
+  for (int i = 0; i < size; ++i) {
+    tree[i + size - 1] = Node(array[i]);
   }
-  root = bottom[0];
+  //Filling tre rest from top to bottom
+  size /= 2;
+  while (size > 0) {
+    for (int i = size - 1; i < size * 2 - 1; ++i) {
+      tree[i] = Node(tree[2 * i + 1], tree[2 * i + 2]);
+    }
+    size /= 2;
+  }
 }
 
 //Just redirect call to main calculating function
 int SegmentTree::Request(int left, int right) const {
-  return getSequence(root, left, right);
+  return getSequence(0, left, right);
 }
 
-
-int SegmentTree::getSequence(const Node *node, int left, int right) const {
+int SegmentTree::getSequence(int index, int left, int right) const {
+  int left_child = 2 * index + 1;
+  int right_child = 2 * index + 2;
   //The whole segment lies on the node
-  if (left == 0 && right == node->length - 1) {
-    return node->sequence;
+  if (left == 0 && right == tree[index].length - 1) {
+    return tree[index].sequence;
   }
   //The whole segment is in left child
-  if (right < node->left->length) {
-    return getSequence(node->left, left, right);
+  if (right < tree[left_child].length) {
+    return getSequence(left_child, left, right);
   }
   //The whole segment is in right child
-  if (left >= node->left->length) {
-    return getSequence(node->right, left - node->left->length, right - node->left->length);
+  if (left >= tree[left_child].length) {
+    return getSequence(right_child, left - tree[left_child].length, right - tree[left_child].length);
   }
   //The segment is in both children
   return std::max(std::max(
-      getSequence(node->left, left, node->left->length - 1),
-      getSequence(node->right, 0, right - node->left->length)),
-                  //Concatenation of sequence on the border between children
-                  std::min(node->left->suffix, node->left->length - left) +
-                      std::min(node->right->prefix, right - node->left->length+1));
+      getSequence(left_child, left, tree[left_child].length - 1),
+      getSequence(right_child, 0, right - tree[left_child].length)),
+      //Concatenation of sequence on the border between children
+                  std::min(tree[left_child].suffix, tree[left_child].length - left) +
+                      std::min(tree[right_child].prefix, right - tree[left_child].length + 1));
 }
 
 //Constructor for node with only both children
-Node::Node(Node *left, Node *right) : left(left), right(right) {
+
+Node::Node(const Node &left, const Node &right) {
   //Calculations are made according to formulas in description
-  length = left->length + right->length;
-  if (left->prefix == left->length) {
-    prefix = left->length + right->prefix;
+  length = left.length + right.length;
+  if (left.prefix == left.length) {
+    prefix = left.length + right.prefix;
   } else {
-    prefix = left->prefix;
+    prefix = left.prefix;
   }
-  if (right->suffix == right->length) {
-    suffix = right->length + left->suffix;
+  if (right.suffix == right.length) {
+    suffix = right.length + left.suffix;
   } else {
-    suffix = right->suffix;
+    suffix = right.suffix;
   }
-  sequence = std::max(left->sequence, std::max(right->sequence, left->suffix + right->prefix));
+  sequence = std::max(left.sequence, std::max(right.sequence, left.suffix + right.prefix));
 }
 
 //Constructor for bottom layer
-Node::Node(bool state)
-    : left(nullptr),
-      right(nullptr),
-      length(1),
-      prefix(state),
-      suffix(state),
-      sequence(state) {}
-//Constructor for node with only one child
-Node::Node(Node *left)
-    : left(left),
-      right(nullptr),
-      length(left->length),
-      prefix(left->prefix),
-      suffix(left->suffix),
-      sequence(left->sequence) {}
+Node::Node(bool state) :
+    length(1),
+    prefix(state),
+    suffix(state),
+    sequence(state) {}
+
+//Constructor for neutral element
+Node::Node() : length(0),
+               prefix(0),
+               suffix(0),
+               sequence(0) {}
