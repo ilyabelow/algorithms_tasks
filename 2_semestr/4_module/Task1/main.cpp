@@ -15,6 +15,8 @@ class SparseTable {
   std::vector<std::vector<std::pair<int, int>>> table;
   //Original array
   std::vector<int> array;
+  //Preprocessed logarithms
+  std::vector<int> logs;
   //Takes two pairs and returns pair of first and second minimums
   std::pair<int, int> getMinPair(const std::pair<int, int> &first, const std::pair<int, int> &second);
  public:
@@ -26,38 +28,36 @@ class SparseTable {
 
 int main() {
   //Reading incoming sequence
-  int n, m;
-  std::cin >> n >> m;
-  std::vector<int> input(n);
-  for (int i = 0; i < n; ++i) {
-    std::cin >> input[i];
+  int array_size, requests_count;
+  std::cin >> array_size >> requests_count;
+  std::vector<int> input_array(array_size);
+  for (int i = 0; i < array_size; ++i) {
+    std::cin >> input_array[i];
   }
   //Constructing table
-  SparseTable table(std::move(input));
-  //Recording answer
-  std::vector<int> answer;
-  for (int j = 0; j < m; ++j) {
+  SparseTable table(std::move(input_array));
+  //Writing answer
+  for (int j = 0; j < requests_count; ++j) {
     int left, right;
     std::cin >> left >> right;
-    answer.push_back(table.Request(left - 1, right - 1));
-  }
-  //Writing answer
-  for (auto i : answer) {
-    std::cout << i << std::endl;
+    std::cout << table.Request(left - 1, right - 1) << std::endl;
   }
   return 0;
 }
 
 SparseTable::SparseTable(std::vector<int> &&init) :
-    table(static_cast<int>(std::log2(init.size())) + 1),
-    array(init) {
+    table(int_log2(init.size()) + 1),
+    array(init), logs(init.size()) {
+  for (int k = 0; k < init.size(); ++k) {
+    logs[k] = int_log2(k + 1);
+  }
   //First layer just points to original array
   for (int i = 0; i < init.size(); ++i) {
     table[0].emplace_back(i, i);
   }
   for (int j = 1; j < table.size(); ++j) {
     //Every next column is shrieked
-    table[j] = std::vector<std::pair<int,int>>(init.size() - int_pow(2, j) + 1);
+    table[j] = std::vector<std::pair<int, int>>(init.size() - int_pow(2, j) + 1);
     for (int i = 0; i < table[j].size(); ++i) {
       //Calculating every other table element according to formula from description
       table[j][i] = getMinPair(table[j - 1][i], table[j - 1][i + int_pow(2, j - 1)]);
@@ -67,7 +67,7 @@ SparseTable::SparseTable(std::vector<int> &&init) :
 
 int SparseTable::Request(int left, int right) {
   //Returning value according to formula
-  int j = int_log2(right - left + 1);
+  int j = logs[right - left];  //shift to -1
   //getMinPair returns index, we need index of second min
   return array[getMinPair(table[j][left], table[j][right - int_pow(2, j) + 1]).second];
 }
