@@ -12,8 +12,8 @@ double mean(const std::vector<double> &set);
 int main() {
   std::cout << std::fixed;
   const int start_vertices = 4;
-  const int end_vertices = 9;
-  const int experements = 5;
+  const int end_vertices = 8;
+  const int experements = 100;
 
   //Test ${experements} configurations for vertices count from ${start_vertices} to ${end_vertices}
   for (int i = start_vertices; i < end_vertices + 1; ++i) {
