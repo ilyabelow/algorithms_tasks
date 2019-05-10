@@ -20,8 +20,8 @@ int main() {
     //Table header
     std::cout << "| " << i << " vertices                                    |" << std::endl;
     std::cout << "| optimum |  2 appr  | error | 1,5 appr | error |" << std::endl;
-    std::vector<double> errors_1_5(5);
-    std::vector<double> errors_2(5);
+    std::vector<double> errors_1_5(experements);
+    std::vector<double> errors_2(experements);
     for (int j = 0; j < experements; ++j) {
       ListGraph graph = generateRandomGraph(i, 0, 1);
       //Calculating approximations and optimum
