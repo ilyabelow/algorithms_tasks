@@ -4,21 +4,25 @@
 #include "Salesman.h"
 #include "Point.h"
 #include <iomanip>
+
 const ListGraph generateRandomGraph(int vertices, double center, double dispersion);
 double standardDeviation(const std::vector<double> &set);
 double mean(const std::vector<double> &set);
 
 int main() {
   std::cout << std::fixed;
+  const int start_vertices = 4;
+  const int end_vertices = 9;
+  const int experements = 5;
 
-  //Test 5 configurations for vertices cont from 4 to 8
-  for (int i = 4; i < 9; ++i) {
-    //Tabel header
-    std::cout << "| " << i << " vestices                                    |" << std::endl;
+  //Test ${experements} configurations for vertices count from ${start_vertices} to ${end_vertices}
+  for (int i = start_vertices; i < end_vertices + 1; ++i) {
+    //Table header
+    std::cout << "| " << i << " vertices                                    |" << std::endl;
     std::cout << "| optimum |  2 appr  | error | 1,5 appr | error |" << std::endl;
     std::vector<double> errors_1_5(5);
     std::vector<double> errors_2(5);
-    for (int j = 0; j < 5; ++j) {
+    for (int j = 0; j < experements; ++j) {
       ListGraph graph = generateRandomGraph(i, 0, 1);
       //Calculating approximations and optimum
       auto opt = Optimum(graph);
@@ -27,10 +31,10 @@ int main() {
       double optWeight = opt.GraphWeight();
       double appr2Weight = approx2.GraphWeight();
       double appr1_5Weight = approx1_5.GraphWeight();
+      //Statistics recording
       errors_2[j] = (appr2Weight - optWeight) / optWeight * 100;
       errors_1_5[j] = (appr1_5Weight - optWeight) / optWeight * 100;
-
-      //Nice printing
+      //Nice results printing
       std::cout << "|";
       std::cout << std::setw(8) << std::setprecision(2) << optWeight << " |";
       std::cout << std::setw(9) << std::setprecision(2) << appr2Weight << " |";
@@ -47,7 +51,7 @@ int main() {
     std::cout << std::setw(9) << std::setprecision(0) << mean(errors_1_5) << "% | ";
     std::cout << std::setw(11) << std::setprecision(0) << standardDeviation(errors_1_5) << "% |";
     std::cout << std::endl;
-
+    //-----------------------
     std::cout << std::endl;
   }
   return 0;
@@ -87,7 +91,7 @@ double mean(const std::vector<double> &set) {
   return sum / set.size();
 }
 
-//Calculate standart deviation for set of values
+//Calculate standard deviation for set of values
 double standardDeviation(const std::vector<double> &set) {
   double sum = 0;
   double mean_value = mean(set);

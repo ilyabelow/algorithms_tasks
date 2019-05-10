@@ -32,6 +32,9 @@ class ListGraph {
   int VerticesCount() const;
   void EmplaceEdge(int from, int to, double weight);
   void AddFullEdge(const FullEdge &edge);
+  void AddEdge(int from, const Edge &edge);
+  void DeleteEdge(int from, int to);
+  void AppendGraph(const ListGraph &other);
 
   const std::vector<FullEdge> GetFullEdges() const;
   const std::vector<Edge> &GetNextEdges(int vertex) const;

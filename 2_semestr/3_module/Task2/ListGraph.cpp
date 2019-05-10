@@ -81,6 +81,29 @@ double ListGraph::GetWeight(int from, int to) const {
   }
   return -1;
 }
+
+void ListGraph::AddEdge(int from, const Edge &edge) {
+  EmplaceEdge(from, edge.to, edge.weight);
+}
+
+void ListGraph::DeleteEdge(int from, int to) {
+  for (int i = 0; i < adjacency_list[from].size(); ++i) {
+    if (adjacency_list[from][i].to == to) {
+      adjacency_list[from][i] = adjacency_list[from][adjacency_list[from].size() - 1];
+      adjacency_list[from].pop_back();
+    }
+  }
+}
+
+//Unite two graphs into one
+void ListGraph::AppendGraph(const ListGraph &other) {
+  for (int from = 0; from < other.VerticesCount(); ++from) {
+    for (auto &edge : other.GetNextEdges(from)) {
+      AddEdge(from, edge);
+    }
+  }
+}
+
 Edge::Edge(int to, double weight) : to(to), weight(weight) {
 
 }
