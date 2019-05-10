@@ -1,6 +1,3 @@
-//
-// Created by bumazhka on 28.04.19.
-//
 #include <vector>
 
 #pragma once
@@ -18,6 +15,7 @@ struct FullEdge {
   double weight;
   FullEdge(int from, int to, double weight);
   FullEdge(int from, const Edge &edge);
+  FullEdge Reversed();
 };
 
 //Functor for sorting edges

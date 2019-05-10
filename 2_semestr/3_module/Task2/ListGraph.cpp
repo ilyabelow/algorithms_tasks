@@ -1,6 +1,3 @@
-//
-// Created by bumazhka on 28.04.19.
-//
 #include <tuple>
 
 #include <vector>
@@ -11,6 +8,10 @@
 FullEdge::FullEdge(int from, int to, double weight) : from(from), to(to), weight(weight) {}
 
 FullEdge::FullEdge(int from, const Edge &edge) : from(from), to(edge.to), weight(edge.weight) {}
+
+FullEdge FullEdge::Reversed() {
+  return {to, from, weight};
+}
 
 ListGraph::ListGraph(int vertices) : adjacency_list(vertices) {}
 
@@ -52,6 +53,7 @@ const ListGraph ListGraph::FindMST() const {
     //If u and v are in different sets, union sets
     if (dsu.FindSet(edge.from) != dsu.FindSet(edge.to)) {
       mst.AddFullEdge(edge);
+      mst.AddFullEdge(edge.Reversed());
       dsu.UnionSets(edge.from, edge.to);
     }
   }

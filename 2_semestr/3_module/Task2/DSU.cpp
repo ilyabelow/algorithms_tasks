@@ -1,7 +1,3 @@
-//
-// Created by bumazhka on 28.04.19.
-//
-
 #include "DSU.h"
 
 DSU::DSU(int vertices) : parent(vertices, -1), rank(vertices, 0) {} //-1 means root
