@@ -49,17 +49,17 @@ LCA::LCA(const std::vector<int> &init_parents) : parents(init_parents.size(),
                                                                           0)),
                                                  depth(init_parents.size(), -1) {
   //Filling parents table according to the recursive formula in conspects
-  for (int v = 0; v < parents.size(); ++v) {
+  for (unsigned int v = 0; v < parents.size(); ++v) {
     parents[v][0] = init_parents[v];
   }
-  for (int i = 1; i < parents[0].size(); ++i) {
+  for (unsigned int i = 1; i < parents[0].size(); ++i) {
     for (int v = 0; v < parents.size(); ++v) {
       parents[v][i] = parents[parents[v][i - 1]][i - 1];
     }
   }
   //Depth calculation via sly DFS
   depth[0] = 0;
-  for (int j = 1; j < depth.size(); ++j) {
+  for (unsigned int j = 1; j < depth.size(); ++j) {
     if (depth[j] == -1) {
       std::stack<int> dfs_stack;
       dfs_stack.push(j);
@@ -79,13 +79,9 @@ LCA::LCA(const std::vector<int> &init_parents) : parents(init_parents.size(),
 //Make request to LCA problem
 int LCA::Request(int left_vertex, int right_vertex) const {
   //Decide which vertex is lower and needs pulling up
-  int upper_vertex, lower_vertex;
-  if (depth[left_vertex] > depth[right_vertex]) {
-    upper_vertex = right_vertex;
-    lower_vertex = left_vertex;
-  } else {
-    lower_vertex = right_vertex;
-    upper_vertex = left_vertex;
+  int upper_vertex = left_vertex, lower_vertex = right_vertex;
+  if (depth[upper_vertex] > depth[lower_vertex]) {
+    std::swap(upper_vertex, lower_vertex);
   }
   //Pulling up lower vertex
   for (int i = parents[0].size() - 1; i >= 0; --i) {
