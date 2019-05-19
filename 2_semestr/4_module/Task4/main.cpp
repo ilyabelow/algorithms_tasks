@@ -27,7 +27,7 @@ struct Node {
 
     int RightDescendants();
 
-    //Uddate descendants
+    //Update descendants
     void FetchDescendants();
 };
 
@@ -69,25 +69,27 @@ public:
 
 
 int main() {
-    TreapWithImplicitKey tree;
-    tree.InsertAt(0, "0");
-    tree.InsertAt(1, "1");
-    tree.InsertAt(1, "2");
-    tree.InsertAt(0, "3");
-    tree.InsertAt(2, "4");
-    tree.InsertAt(2, "5");
-    tree.InsertAt(3, "6");
-    tree.InsertAt(5, "7");
-    tree.InsertAt(5, "8");
-    tree.InsertAt(4, "9");
-    for (int i = 0; i < 10; ++i) {
-        std::cout << tree.GetAt(i) << ' ';
-    }
-    tree.DeleteAt(2, 2);
-    tree.DeleteAt(4, 6);
-    std::cout << std::endl;
-    for (int i = 0; i < 6; ++i) {
-        std::cout << tree.GetAt(i) << ' ';
+    TreapWithImplicitKey treap;
+    int commands_count;
+    std::cin >> commands_count;
+    //Handling commands
+    for (int i = 0; i < commands_count; ++i) {
+        char command;
+        std::cin >> command;
+        if (command == '+') { //Addition command
+            int position;
+            std::string value;
+            std::cin >> position >> value;
+            treap.InsertAt(position, value);
+        } else if (command == '-') { //Deleting command
+            int left_position, right_position;
+            std::cin >> left_position >> right_position;
+            treap.DeleteAt(left_position, right_position);
+        } else if (command == '?') { //Getting command
+            int position;
+            std::cin >> position;
+            std::cout << treap.GetAt(position) << std::endl;
+        }
     }
     return 0;
 }
