@@ -49,6 +49,9 @@ private:
     //Recursive search for particular key
     std::string search(int key, Node *node);
 
+    //Merge two treaps into one
+    Node *merge(Node *left, Node *right);
+
 public:
     TreapWithImplicitKey();
 
@@ -57,7 +60,7 @@ public:
     //Insert new information
     void InsertAt(int position, const std::string &value);
 
-    //Delete range
+    //Delete range (borders included)
     void DeleteAt(int left_position, int right_position);
 
     //Get value by its index
@@ -78,6 +81,12 @@ int main() {
     tree.InsertAt(5, "8");
     tree.InsertAt(4, "9");
     for (int i = 0; i < 10; ++i) {
+        std::cout << tree.GetAt(i) << ' ';
+    }
+    tree.DeleteAt(2, 2);
+    tree.DeleteAt(4, 6);
+    std::cout << std::endl;
+    for (int i = 0; i < 6; ++i) {
         std::cout << tree.GetAt(i) << ' ';
     }
     return 0;
@@ -252,4 +261,46 @@ std::string TreapWithImplicitKey::search(int key, Node *node) {
     }
     return node->data;
 
+}
+
+Node *TreapWithImplicitKey::merge(Node *left, Node *right) {
+    //If one of the trees is empty, return the other one
+    if (left == nullptr) {
+        return right;
+    }
+    if (right == nullptr) {
+        return left;
+    }
+    //if left tree is under right tree
+    if (left->priority > right->priority) {
+        Node *merged = merge(left->right, right);
+        left->right = merged;
+        if (merged != nullptr) {
+            merged->parent = left;
+        }
+        //Update descendants
+        left->FetchDescendants();
+        return left;
+    } else {
+        //otherwise
+        Node *merged = merge(left, right->left);
+        right->left = merged;
+        if (merged != nullptr) {
+            merged->parent = right;
+        }
+        //Update descendants
+        right->FetchDescendants();
+        return right;
+    }
+}
+
+void TreapWithImplicitKey::DeleteAt(int left_position, int right_position) {
+    Node *left, *middle, *right;
+    //cut the left portion
+    split(left_position, root, left, middle);
+    //cut the right portion from the remainings
+    split(right_position - left_position + 1, middle, middle, right);
+    //merge left and right portions, middle one is thrown away
+    root = merge(left, right);
+    clearTree(middle);
 }
