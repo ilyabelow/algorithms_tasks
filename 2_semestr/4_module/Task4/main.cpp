@@ -46,6 +46,9 @@ private:
     //Recursive function that splits tree into two by key. Parts are put into &left and *&right
     void split(int key, Node *tree, Node *&left, Node *&right);
 
+    //Recursive search for particular key
+    std::string search(int key, Node *node);
+
 public:
     TreapWithImplicitKey();
 
@@ -73,10 +76,13 @@ int main() {
     tree.InsertAt(3, "6");
     tree.InsertAt(5, "7");
     tree.InsertAt(5, "8");
-    tree.InsertAt(5, "8");
     tree.InsertAt(4, "9");
+    for (int i = 0; i < 10; ++i) {
+        std::cout << tree.GetAt(i) << ' ';
+    }
     return 0;
 }
+
 
 //Empty constructor for leafs
 Node::Node(int key, const std::string &data) : data(data),
@@ -230,4 +236,20 @@ void TreapWithImplicitKey::split(int key, Node *tree, Node *&left, Node *&right)
     if (right != nullptr) {
         right->FetchDescendants();
     }
+}
+
+std::string TreapWithImplicitKey::GetAt(int position) {
+    return search(position, root);
+}
+
+std::string TreapWithImplicitKey::search(int key, Node *node) {
+    node->CalculateKey();
+    if (key < node->key) {
+        return search(key, node->left);
+    }
+    if (key > node->key) {
+        return search(key, node->right);
+    }
+    return node->data;
+
 }
